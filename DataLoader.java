@@ -113,4 +113,43 @@ public class DataLoader {
         }
         return null;
     }
+    
+    public static ArrayList<Resume> getResumes() {
+        ArrayList<Resume> resumes = new ArrayList<Resume>();
+        try {
+            FileReader reader = new FileReader(RESUME_FILE);
+            JSONParser parser = new JSONParser();
+            JSONArray resumesJSON = (JSONArray)new JSONParser().parse(reader);
+            for(int i=0; i<resumesJSON.size(); i++) {
+                JSONObject resumeJSON = (JSONObject)resumesJSON.get(i);
+                UUID studentID = UUID.fromString((String)resumeJSON.get("id"));
+                JSONArray skillsArray = (JSONArray)resumeJSON.get("skills");
+                ArrayList<String> skills = new ArrayList<String>();
+                for(int j=0; j<skillsArray.size(); j++) {
+                    skills.add((String)skillsArray.get(j));
+                }
+                String university = (String)resumeJSON.get("university");
+                String degree = (String)resumeJSON.get("degree");
+                String graduation = (String)resumeJSON.get("graduationDate");
+                Education education = new Education(university, degree, graduation);
+                ArrayList<Experience> experiences = new ArrayList<Experience>();
+                JSONArray companyArray = (JSONArray)resumeJSON.get("company");
+                JSONArray positionArray = (JSONArray)resumeJSON.get("position");
+                JSONArray descriptionArray = (JSONArray)resumeJSON.get("jobdescription");
+                JSONArray durationArray = (JSONArray)resumeJSON.get("duration");
+                for(int k=0; k<skillsArray.size(); k++) {
+                    String company = (String)companyArray.get(k);
+                    String position = (String)positionArray.get(k);
+                    String description = (String)descriptionArray.get(k);
+                    String duration = (String)durationArray.get(k);
+                    experiences.add(new Experience(company, position, description, duration));
+                }
+                resumes.add(new Resume(studentID, skills, experiences, education));
+            }
+            return resumes;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

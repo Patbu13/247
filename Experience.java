@@ -1,13 +1,13 @@
+import java.util.ArrayList;
+
 public class Experience {
     private String company;
-    private String location;
     private String position;
     private String description;
     private String duration;
 
-    public Experience(String company, String location, String position, String description, String duration) {
+    public Experience(String company, String position, String description, String duration) {
         this.company = company;
-        this.location = location;
         this.position = position;
         this.description = description;
         this.duration = duration;
@@ -15,10 +15,6 @@ public class Experience {
 
     public String getCompany() {
         return company;
-    }
-
-    public String getLocation() {
-        return location;
     }
 
     public String getPosition() {
@@ -32,5 +28,4 @@ public class Experience {
     public String getDuration() {
         return duration;
     }
-
 }

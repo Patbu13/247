@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class InternshipApplication {
-    JobList jobListing;
+    JobList jobListings;
     UserList userList;
     User user;
 
@@ -10,8 +10,10 @@ public class InternshipApplication {
         
     }
 
-    public ArrayList<JobListing> findJobs(){
-        return null;
+    public ArrayList<JobListing> findJobs(boolean code, int codingFilter, boolean loc, String location, boolean rate, Rating rating){
+        ArrayList<JobListing> filteredList = new ArrayList<JobListing>();
+        filteredList = JobList.getInstance().getJobLists(code, codingFilter, loc, location, rate, rating);
+        return filteredList;
     }
 
     /**
@@ -37,7 +39,7 @@ public class InternshipApplication {
             user = new Student(username, password, email, firstName, lastName, userType, phoneNum, ID);
         }
         else if (userType == 2) {
-            user = new Employer(username, password, email, firstName, lastName, location, company, userType, phoneNum, ID);
+            user = new Employer(username, password, email, firstName, lastName, userType, phoneNum, ID);
         }
         UserList.getInstance().addUser(user);
         return user;
@@ -76,8 +78,8 @@ public class InternshipApplication {
      * @param skills skills required for the internship
      * @return the created job listing
      */
-    public JobListing addJobListing(String title, UUID employerID, float pay, String location, String length, String position, String jobDescription, ArrayList<String> skills){
-        JobListing newJob = new JobListing(title, employerID, location, pay, length, position, jobDescription, skills);
+    public JobListing addJobListing(String title, UUID employerID, float pay, String location, String length, String position, String jobDescription, ArrayList<String> skills, CodingFilters codeFilt, ArrayList<UUID> studentIDS){
+        JobListing newJob = new JobListing(title, employerID, location, pay, length, position, jobDescription, skills, codeFilt, studentIDS);
         return newJob;
     }
 
@@ -114,20 +116,47 @@ public class InternshipApplication {
      * @return newly refreshed list of the ratings with the requested rating deleted
      */
     public RatingList deleteRating(Rating rating){
-        return RatingList.getInstance().deleteRating(rating.getID());
+        int deletedID = rating.getID();
+        RatingList.getInstance().deleteRating(rating.getID());
+        RatingList.getInstance().fixIDs(deletedID);
+        return RatingList.getInstance();
     }
 
-    public JobListing editListing(JobListing job, float pay, String length, String position, String jobDescription, ArrayList<String> skills) {
-        return null;
+    /**
+     * Edits a listing attached to an employer's account
+     * 
+     * @param job Job listing that is being edited
+     * @param title New title of the job listing
+     * @param location New location of the job listing
+     * @param pay New pay of the job listing
+     * @param length New length of the job listing
+     * @param position New position of the job listing
+     * @param jobDescription New description of the job listing
+     * @param skills New skills required by the job listing
+     * @return refreshed list of jobs with the edited listing
+     */
+    public JobList editJobListing(JobListing job, String title, String location, float pay, String length, String position, String jobDescription, ArrayList<String> skills) {
+        job.editJobListing(job, title, location, pay, length, position, jobDescription, skills);
+        return JobList.getInstance();
     }
 
-    public JobListing deleteJobListing(JobListing job) {
-        return null;
+    /**
+     * Deletes a job listing
+     * @param job job being deleted
+     * @return refreshed list of jobs with the job deleted
+     */
+    public JobList deleteJobListing(JobListing job) {
+        int deletedID = job.getID();
+        JobList.getInstance().deleteJob(job.getID());
+        JobList.getInstance().fixIDs(deletedID);
+        return JobList.getInstance();
     }
 
-    public void Apply(JobListing job) {
-        
-    }
+    /**
+     * Method for applying a student to a job listing
+     * @param job Job student is applying to
+     * @param stu Student who is applying to the job
+     */
     public void Apply(JobListing job, Student stu) {
         job.addApplicant(stu.getID());
     }
